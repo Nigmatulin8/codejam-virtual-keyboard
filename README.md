@@ -1,2 +1,6 @@
 # RS
-CodaJam - Virtual keyboard
+Canvas CodeJam
+
+Делать демки, пулреквесты.
+Делать резет стилей. (для бади марджин и паддинг = 0)
+normalize css
