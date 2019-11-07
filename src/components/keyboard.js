@@ -122,7 +122,7 @@ class Keyboard {
 
 				//class="key key__func key__[backspace | tab | alt | ctrl | sheft | space ]"
 				button.classList.add("key", this.keys[key][1], this.keys[key][2]);
-
+			
 				switch(this.keys[key][0]) {
 					case "Ctrl" :
 						button.dataset.key = "ControlLeft";
@@ -196,6 +196,11 @@ class Keyboard {
 			this.textarea.value = this.buffer;
 		}
 
+		//Сохранение капса нажаты при смене раскладки
+		if(this.caps) {
+			this.keyboardKeys[28].classList.add("capsLock");
+		}
+
 		this.__addListeners();
 	}
 
@@ -225,26 +230,15 @@ class Keyboard {
 
 		if(event.key === "Enter") {
 			this.textField.innerText += "\u0020" + this.textarea.value  ;
+			this.textarea.value.length = 0;
+			this.textarea.value = "";
+		}
+
+		if(event.key === "Delete") {
 			this.textarea.value = "";
 		}
 		
-		if( event.key !== "Backspace" && 
-			event.key !== "Alt" && 
-			event.key !== "Delete" &&
-			event.key !== "Control" &&
-			event.key !== "Shift" &&
-			event.key !== "CapsLock" && 
-			event.key !== "Enter" &&
-			event.key !== "Tab" &&
-			event.key !== "Meta" &&
-			event.key !== "AltGraph" &&
-			event.key !== "ContextMenu" &&
-			event.key !== "ArrowUp" &&
-			event.key !== "ArrowLeft" &&
-			event.key !== "ArrowDown" &&
-			event.key !== "ArrowRight"
-			) {
-
+		if(this.__functionalKeyPressCheck(event.key)) {
 			this.textarea.value += event.key;
 		}
 
@@ -316,28 +310,18 @@ class Keyboard {
 			this.textarea.value = this.textarea.value.slice(0, this.textarea.value.toString().length - 1);
 		}
 
-		if(event.target.value && 
-			event.target.type !== "textarea" && 
-			event.target.type === "button" && 
-			event.target.value !== "Backspace" &&
-			event.target.value !== "Alt" && 
-			event.target.value !== "Del" &&
-			event.target.value !== "Control" &&
-			event.target.value !== "Shift" &&
-			event.target.value !== "CapsLock" && 
-			event.target.value !== "Enter" &&
-			event.target.value !== "Tab" &&
-			event.target.value !== "Ctrl" &&
-			event.target.value !== "Meta" &&
-			event.target.value !== "Space" &&
-			event.target.value !== "Win" &&
-			event.target.value !== "AltGraph" &&
-			event.target.value !== "ContextMenu" &&
-			event.target.value !== "←" &&
-			event.target.value !== "↑" &&
-			event.target.value !== "↓" &&
-			event.target.value !== "→"
-			) {
+		if(event.target.value === "Enter") {
+			this.textField.innerText += "\u0020" + this.textarea.value  ;
+			this.textarea.value.length = 0;
+			this.textarea.value = "";
+		}
+
+		if(event.target.value === "Del") {
+			this.textarea.value = "";
+		}
+
+		if(event.target.type !== "textarea" && event.target.type === "button" && 
+			this.__functionalKeyClickCheck(event.target.value)) {
 
 			this.textarea.value += event.target.value;
 		}
@@ -381,6 +365,20 @@ class Keyboard {
 		return counter;
 	}
 
+	__functionalKeyPressCheck(key) {
+		return  key !== "Backspace" && key !== "Alt" && key !== "Delete" && key !== "Control" &&
+				key !== "Shift" && key !== "CapsLock" &&  key !== "Enter" && key !== "Tab" &&
+				key !== "Meta" && key !== "AltGraph" && key !== "ContextMenu" && key !== "ArrowUp" &&
+				key !== "ArrowLeft" && key !== "ArrowDown" && key !== "ArrowRight"
+	}
+
+	__functionalKeyClickCheck(key) {
+		return  key && key !== "Backspace" && key !== "Alt" && key !== "Del" && 
+				key !== "Control" && key !== "Shift" && key !== "CapsLock" && 
+				key !== "Enter" && key !== "Tab" && key !== "Ctrl" && key !== "Meta" && 
+				key !== "Space" && key !== "Win" && key !== "AltGraph" && key !== "ContextMenu" 
+				&& key !== "←" && key !== "↑" && key !== "↓" && key !== "→"
+	}
 }
 
 module.exports = Keyboard;
