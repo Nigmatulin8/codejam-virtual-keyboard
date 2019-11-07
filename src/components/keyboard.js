@@ -2,19 +2,20 @@ class Keyboard {
 	constructor() {
 		this.keys = {
 			0: { ru: "ё", en: "`" },
-			1: { ru: "1", en: "1" },
-			2: { ru: "2", en: "2" },
-			3: { ru: "3", en: "3" },
-			4: { ru: "4", en: "4" },
-			5: { ru: "5", en: "5" },
-			6: { ru: "6", en: "6" },
-			7: { ru: "7", en: "7" },
-			8: { ru: "8", en: "8" },
-			9: { ru: "9", en: "9" },
-			10: { ru: "0", en: "0" },
-			11: { ru: "-" , en: "-" },
-			12: { ru: "=" , en: "=" },
+			1: { ru: "1", en: "1", ctrl: "!" },
+			2: { ru: "2", en: "2", ctrl: "\"" },
+			3: { ru: "3", en: "3", ctrl: "№" },
+			4: { ru: "4", en: "4", ctrl: ";" },
+			5: { ru: "5", en: "5", ctrl: "%" },
+			6: { ru: "6", en: "6", ctrl: ":" },
+			7: { ru: "7", en: "7", ctrl: "?" },
+			8: { ru: "8", en: "8", ctrl: "*" },
+			9: { ru: "9", en: "9", ctrl: "(" },
+			10: { ru: "0", en: "0", ctrl: ")" },
+			11: { ru: "-" , en: "-", ctrl: "_" },
+			12: { ru: "=" , en: "=", ctrl: "+" },
 			13: ["Backspace", "key__func", "key__backspace"],
+
 			14: ["Tab", "key__func", "key__tab"],
 			15: { ru: "й", en: "q" },
 			16: { ru: "ц", en: "w" },
@@ -75,12 +76,14 @@ class Keyboard {
 		this.keyboardElement = null;
 		this.textarea = null;
 		this.keyboardKeys = null;
-
+		this.textField = null;
 		this.language = "ru";
+		this.caps = false;
 
 		this.pressed = new Set(); //Для хранения зажатых клавиш (прим. Alt + Shift)
 
-		//Позволяет удалять обработчик события (чтобы не приводило к дублированию выводимых символов после смены языка)
+		//Позволяет удалять обработчик события, 
+		//чтобы не приводило к дублированию выводимых символов после смены языка
 		this.keydownHandler = event => this.__keydownFunction(event);
 		this.keyupHandler = event => this.__keyupFunction(event);
 		this.clickHandler = event => this.__clickFunction(event);
@@ -171,23 +174,77 @@ class Keyboard {
 		document.body.insertAdjacentElement('afterBegin', form);
 		form.insertAdjacentElement('beforeEnd', p);
 
+		this.__initTextField();
 		this.__getElements();
+	}
+
+	__initTextField() {
+		const textField = document.createElement("div");
+		textField.classList.add("textField");
+
+		document.querySelector("form").insertAdjacentElement('afterend', textField);
 	}
 
 	__getElements() {
 		this.keyboardElement = document.getElementsByClassName("keyboard")[0];
 		this.textarea = document.getElementsByClassName("output__textarea")[0];
 		this.keyboardKeys = document.querySelectorAll("input[type=button]");
+		this.textField = document.getElementsByClassName("textField")[0];
 
 		this.__addListeners();
 	}
 
 	__keydownFunction(event) {
 		this.pressed.add(event.key);
-		this.textarea.value += event.key;
+
+		if(event.key === "Control") {
+			for(let i = 1; i < 13; i++) {
+				this.keyboardKeys[i].value = this.keys[i]["ctrl"];
+			}
+		}
+
+		if(event.key === "Shift") {
+			for(let i = 0; i < this.keyboardKeys.length; i++) {
+				if(!this.keyboardKeys[i].classList.contains("key__func")) {
+					this.keyboardKeys[i].value = this.keys[i][this.language].toUpperCase();
+				}
+			}
+
+			for(let i = 1; i < 13; i++) {
+				this.keyboardKeys[i].value = this.keys[i]["ctrl"];
+			}
+		}
+		
+		// Вкл / выкл CapsLock'а
+		event.key === "CapsLock" ? this.__capsLock() : false;
+
+		if(event.key === "Enter") {
+			this.textField.innerText += "\u0020" + this.textarea.value  ;
+			this.textarea.value = "";
+		}
+
+		if( event.key !== "Backspace" && 
+			event.key !== "Alt" && 
+			event.key !== "Delete" &&
+			event.key !== "Control" &&
+			event.key !== "Shift" &&
+			event.key !== "CapsLock" && 
+			event.key !== "Enter" &&
+			event.key !== "Tab" &&
+			event.key !== "ArrowUp" &&
+			event.key !== "ArrowLeft" &&
+			event.key !== "ArrowDown" &&
+			event.key !== "ArrowRight"
+			) {
+
+			this.textarea.value += event.key;
+		}
 
 		for(let i = 0; i < this.keyboardKeys.length; i++) {
-			if(event.key == this.keyboardKeys[i].value || event.code == this.keyboardKeys[i].value || event.code == this.keyboardKeys[i].dataset.key) {
+			if(event.key === this.keyboardKeys[i].value || 
+				event.code === this.keyboardKeys[i].value || 
+				event.code === this.keyboardKeys[i].dataset.key) {
+
 				if(!this.keyboardKeys[i].classList.contains("active")) {
 					this.keyboardKeys[i].classList.add("active");
 					break;
@@ -197,6 +254,26 @@ class Keyboard {
 	}
 
 	__keyupFunction(event) {
+		this.textarea.autofocus = false;
+
+		if(event.key === "Control") {
+			for(let i = 0; i < 13; i++) {
+				this.keyboardKeys[i].value = this.keys[i]["ru"];
+			}
+		}
+
+		if(event.key === "Shift") {
+			for(let i = 0; i < this.keyboardKeys.length; i++) {
+				if(!this.keyboardKeys[i].classList.contains("key__func")) {
+					this.keyboardKeys[i].value = this.keys[i][this.language].toLowerCase();
+				}
+			}
+
+			for(let i = 1; i < 13; i++) {
+				this.keyboardKeys[i].value = this.keys[i]["ru"];
+			}
+		}
+
 		for(let i = 0; i < this.keyboardKeys.length; i++) {
 			if(this.keyboardKeys[i].classList.contains("active")) {
 				this.keyboardKeys[i].classList.remove("active");
@@ -205,7 +282,11 @@ class Keyboard {
 
 		if(this.pressed.has("Alt") && this.pressed.has("Shift") && this.pressed.size == 2) {
 			const form = document.querySelector("form");
-			document.body.removeChild(form);
+
+			//Удаление все дочек
+			while (document.body.firstChild) {
+				document.body.removeChild(document.body.firstChild);
+			}
 
 			this.language == 'ru' ? this.language = 'en' : this.language = 'ru';
 
@@ -221,9 +302,58 @@ class Keyboard {
 	}
 
 	__clickFunction(event) {
-		if(event.target.value && event.target.type !== "textarea" && event.target.type === "button") {
+		if(event.target.value == "Backspace") {
+			//Эмуляция работы клавиши backspace при клике на него мышкой.
+			this.textarea.value = this.textarea.value.slice(0, this.textarea.value.toString().length - 1);
+		}
+
+		if(event.target.value && 
+			event.target.type !== "textarea" && 
+			event.target.type === "button" && 
+			event.target.value !== "Backspace" &&
+			event.target.value !== "Alt" && 
+			event.target.value !== "Del" &&
+			event.target.value !== "Control" &&
+			event.target.value !== "Shift" &&
+			event.target.value !== "CapsLock" && 
+			event.target.value !== "Enter" &&
+			event.target.value !== "Tab" &&
+			event.target.value !== "←" &&
+			event.target.value !== "↑" &&
+			event.target.value !== "↓" &&
+			event.target.value !== "→"
+			) {
+
 			this.textarea.value += event.target.value;
 		}
+
+		// Вкл / выкл CapsLock'а
+		event.target.value === "CapsLock" ? this.__capsLock() : false;
+	}
+
+	__capsLock() {
+		if(!this.caps) {
+			this.keyboardKeys[28].classList.add("capsLock");
+
+			for(let i = 0; i < this.keyboardKeys.length; i++) {
+				if(!this.keyboardKeys[i].classList.contains("key__func")) {
+					this.keyboardKeys[i].value = this.keys[i][this.language].toUpperCase();
+				}
+			}
+
+		}
+
+		else {
+			this.keyboardKeys[28].classList.remove("capsLock");
+
+			for(let i = 0; i < this.keyboardKeys.length; i++) {
+				if(!this.keyboardKeys[i].classList.contains("key__func")) {
+					this.keyboardKeys[i].value = this.keys[i][this.language].toLowerCase();
+				}
+			}
+		}
+	
+		this.caps = !this.caps;
 	}
 
 	__keysLength() {
@@ -235,6 +365,7 @@ class Keyboard {
 
 		return counter;
 	}
+
 }
 
 module.exports = Keyboard;
