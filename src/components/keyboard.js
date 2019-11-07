@@ -79,7 +79,7 @@ class Keyboard {
 		this.textField = null;
 		this.language = "ru";
 		this.caps = false;
-
+		this.buffer = ""; //Для сохранения текста
 		this.pressed = new Set(); //Для хранения зажатых клавиш (прим. Alt + Shift)
 
 		//Позволяет удалять обработчик события, 
@@ -191,6 +191,11 @@ class Keyboard {
 		this.keyboardKeys = document.querySelectorAll("input[type=button]");
 		this.textField = document.getElementsByClassName("textField")[0];
 
+		//Сохранение текста при переключении раскладки
+		if(this.buffer) {
+			this.textarea.value = this.buffer;
+		}
+
 		this.__addListeners();
 	}
 
@@ -222,7 +227,7 @@ class Keyboard {
 			this.textField.innerText += "\u0020" + this.textarea.value  ;
 			this.textarea.value = "";
 		}
-
+		
 		if( event.key !== "Backspace" && 
 			event.key !== "Alt" && 
 			event.key !== "Delete" &&
@@ -231,6 +236,9 @@ class Keyboard {
 			event.key !== "CapsLock" && 
 			event.key !== "Enter" &&
 			event.key !== "Tab" &&
+			event.key !== "Meta" &&
+			event.key !== "AltGraph" &&
+			event.key !== "ContextMenu" &&
 			event.key !== "ArrowUp" &&
 			event.key !== "ArrowLeft" &&
 			event.key !== "ArrowDown" &&
@@ -289,6 +297,7 @@ class Keyboard {
 			}
 
 			this.language == 'ru' ? this.language = 'en' : this.language = 'ru';
+			this.buffer = this.textarea.value; //Сохранение набранного текста
 
 			this.__removeListeners();
 
@@ -318,6 +327,12 @@ class Keyboard {
 			event.target.value !== "CapsLock" && 
 			event.target.value !== "Enter" &&
 			event.target.value !== "Tab" &&
+			event.target.value !== "Ctrl" &&
+			event.target.value !== "Meta" &&
+			event.target.value !== "Space" &&
+			event.target.value !== "Win" &&
+			event.target.value !== "AltGraph" &&
+			event.target.value !== "ContextMenu" &&
 			event.target.value !== "←" &&
 			event.target.value !== "↑" &&
 			event.target.value !== "↓" &&
