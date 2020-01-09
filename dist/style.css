@@ -1,0 +1,96 @@
+body {
+  margin: 0;
+  padding: 0; }
+
+body {
+  background: whitesmoke; }
+
+form {
+  margin: 25px auto;
+  box-sizing: border-box;
+  box-shadow: 1px 2px 2px #bbb, -1px 0 2px #bbb;
+  text-align: center; }
+  form .output__textarea {
+    width: 880px;
+    height: 132px;
+    box-sizing: border-box;
+    padding: 10px;
+    margin: 5px 0; }
+  form .keyboard {
+    width: 880px;
+    height: 304px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap; }
+    form .keyboard .key {
+      height: 54px;
+      box-sizing: border-box;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-size: 18px; }
+      form .keyboard .key:hover {
+        background: #4588f3; }
+      form .keyboard .key__letter {
+        width: 54px;
+        background: #3a424e; }
+      form .keyboard .key__func {
+        background: #1c232e; }
+      form .keyboard .key__backspace {
+        width: 128px; }
+      form .keyboard .key__tab {
+        width: 66px; }
+      form .keyboard .key__del {
+        width: 56px; }
+      form .keyboard .key__caps {
+        width: 128px; }
+      form .keyboard .key__enter {
+        width: 114px; }
+      form .keyboard .key__l-shift {
+        width: 128px; }
+      form .keyboard .key__arrow {
+        width: 54px; }
+      form .keyboard .key__r-shift {
+        width: 56px; }
+      form .keyboard .key__ctrl {
+        width: 82px; }
+      form .keyboard .key__win-alt {
+        width: 54px; }
+      form .keyboard .key__en-ru {
+        width: 70px; }
+      form .keyboard .key__space {
+        background: #3a424e;
+        width: 358px; }
+  form .active {
+    transition: 0.1s;
+    background: #4588f3 !important; }
+  form p {
+    font-size: 22px;
+    font-family: sans-serif; }
+  form .capsLock {
+    background: #D62929 !important; }
+
+.textField {
+  width: 880px;
+  height: 150px;
+  margin: 15px auto 5px;
+  padding: 10px;
+  font-size: 20px;
+  box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.2);
+  overflow-y: scroll; }
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background-color: #F5F5F5; }
+
+::-webkit-scrollbar {
+  width: 12px;
+  background-color: #F5F5F5; }
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #555555; }
+
